@@ -13,6 +13,10 @@
 // limitations under the License.
 #include "sd_diskio.h"
 #include "esp_system.h"
+
+bool SD_INTEGRITY = true;
+
+
 extern "C" {
     #include "ff.h"
     #include "diskio.h"
@@ -197,6 +201,7 @@ char sdCommand(uint8_t pdrv, char cmd, unsigned int arg, unsigned int* resp)
     }
     if (token == 0xFF) {
         log_e("Card Failed! cmd: 0x%02x", cmd);
+        SD_INTEGRETY = false;
         card->status = STA_NOINIT;
     }
     return token;
@@ -619,6 +624,7 @@ DSTATUS ff_sd_status(uint8_t pdrv)
     if(sdTransaction(pdrv, SEND_STATUS, 0, NULL))
     {
         log_e("Check status failed");
+        SD_INTEGRITY = false;
         return STA_NOINIT;
     }
     return s_cards[pdrv]->status;
